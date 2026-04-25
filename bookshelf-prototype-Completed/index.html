@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookshelf App</title>
+
+    <!-- Fonts: Playfair Display + Lato -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script defer src="main.js"></script>
+
+    <!-- Styles CSS -->
+    <style>
+      /* CSS variables */
+      :root {
+        --bg: #1a120b;
+        --surface: #2c1a0e;
+        --surface2: #3d2410;
+        --accent: #c8873a;
+        --accent-light: #e6a85a;
+        --text: #f5e6d0;
+        --text-muted: #a08060;
+        --complete: #4caf7d;
+        --incomplete: #e07b4a;
+        --danger: #e05050;
+        --border: rgba(200, 135, 58, 0.25);
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        --radius: 12px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Lato', sans-serif;
+        min-height: 100vh;
+        background-image:
+          radial-gradient(ellipse at 20% 10%, rgba(200, 135, 58, 0.07) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 90%, rgba(200, 135, 58, 0.05) 0%, transparent 50%);
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(135deg, var(--surface) 0%, #1e0f06 100%);
+        border-bottom: 1px solid var(--border);
+        padding: 28px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::before {
+        content: '📚';
+        position: absolute;
+        font-size: 120px;
+        opacity: 0.04;
+        left: -20px;
+        top: -20px;
+      }
+
+      header::after {
+        content: '📖';
+        position: absolute;
+        font-size: 100px;
+        opacity: 0.04;
+        right: 10px;
+        bottom: -10px;
+      }
+
+      header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.6rem;
+        color: var(--accent-light);
+        letter-spacing: 2px;
+        text-shadow: 0 2px 20px rgba(200, 135, 58, 0.4);
+      }
+
+      header p.subtitle {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 6px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-weight: 300;
+      }
+
+      /* Layout Utama */
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 24px;
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        grid-template-rows: auto auto;
+        gap: 28px;
+      }
+
+      /* Section card */
+      section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        color: var(--accent-light);
+        margin-bottom: 22px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      section h2 .icon {
+        font-size: 1.2rem;
+      }
+
+      /* Layout form */
+      #bookForm,
+      #searchBook {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      label {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+      }
+
+      input[type='text'],
+      input[type='number'] {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 11px 14px;
+        color: var(--text);
+        font-family: 'Lato', sans-serif;
+        font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+      }
+
+      input[type='text']:focus,
+      input[type='number']:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(200, 135, 58, 0.15);
+      }
+
+      /* Checkbox style */
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        cursor: pointer;
+      }
+
+      .checkbox-group input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        text-transform: none;
+        letter-spacing: 0;
+        font-size: 0.9rem;
+        color: var(--text);
+        cursor: pointer;
+        margin: 0;
+      }
+
+      /* Tombol Submit */
+      #bookFormSubmit {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: #1a0f00;
+        border: none;
+        border-radius: 8px;
+        padding: 13px 20px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      #bookFormSubmit:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      #bookFormSubmit:active {
+        transform: translateY(0);
+      }
+
+      #bookFormSubmit span {
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      /* Untuk fitur search */
+      #searchBook {
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 12px;
+      }
+
+      #searchBook .form-group {
+        flex: 1;
+      }
+
+      #searchSubmit {
+        background: var(--surface2);
+        color: var(--accent-light);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 11px 20px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+      }
+
+      #searchSubmit:hover {
+        background: var(--accent);
+        color: #1a0f00;
+        border-color: var(--accent);
+      }
+
+      /* Layout tempat buku */
+      .book-sections {
+        grid-column: 2;
+        grid-row: 1 / 3;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      /* List dan item buku-buku */
+      .book-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-height: 60px;
+      }
+
+      .book-count {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: var(--surface2);
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-left: auto;
+        font-weight: 700;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 30px 0;
+        font-size: 0.9rem;
+        font-style: italic;
+        opacity: 0.6;
+      }
+
+      [data-testid='bookItem'] {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        position: relative;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      [data-testid='bookItem']:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+        border-color: rgba(200, 135, 58, 0.4);
+      }
+
+      /* Accent strip kiri berdasarkan status */
+      [data-testid='bookItem'].complete {
+        border-left: 3px solid var(--complete);
+      }
+
+      [data-testid='bookItem'].incomplete {
+        border-left: 3px solid var(--incomplete);
+      }
+
+      [data-testid='bookItemTitle'] {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        color: var(--text);
+        margin-bottom: 6px;
+        line-height: 1.4;
+      }
+
+      [data-testid='bookItemAuthor'] {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 3px;
+      }
+
+      [data-testid='bookItemYear'] {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+      }
+
+      /* Tombol aksi */
+      .book-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .book-actions button {
+        border: none;
+        border-radius: 6px;
+        padding: 7px 14px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        letter-spacing: 0.3px;
+      }
+
+      .book-actions button:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+
+      [data-testid='bookItemIsCompleteButton'] {
+        background: rgba(76, 175, 125, 0.15);
+        color: var(--complete);
+        border: 1px solid rgba(76, 175, 125, 0.3) !important;
+      }
+
+      [data-testid='bookItemIsCompleteButton']:hover {
+        background: rgba(76, 175, 125, 0.25) !important;
+      }
+
+      [data-testid='bookItemDeleteButton'] {
+        background: rgba(224, 80, 80, 0.12);
+        color: var(--danger);
+        border: 1px solid rgba(224, 80, 80, 0.25) !important;
+      }
+
+      [data-testid='bookItemDeleteButton']:hover {
+        background: rgba(224, 80, 80, 0.22) !important;
+      }
+
+      [data-testid='bookItemEditButton'] {
+        background: rgba(200, 135, 58, 0.12);
+        color: var(--accent-light);
+        border: 1px solid rgba(200, 135, 58, 0.25) !important;
+      }
+
+      [data-testid='bookItemEditButton']:hover {
+        background: rgba(200, 135, 58, 0.22) !important;
+      }
+
+      /* Edit */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 32px;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        animation: modalIn 0.25s ease;
+      }
+
+      @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+      }
+
+      .modal h2 {
+        margin-bottom: 22px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 14px;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn-save {
+        flex: 1;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        color: #1a0f00;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-save:hover { opacity: 0.9; }
+
+      .btn-cancel {
+        background: var(--surface2);
+        color: var(--text-muted);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-family: 'Lato', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-cancel:hover { border-color: var(--accent); color: var(--accent-light); }
+
+      /* Responsif */
+      @media (max-width: 768px) {
+        main {
+          grid-template-columns: 1fr;
+          padding: 20px 16px;
+        }
+
+        .book-sections {
+          grid-column: 1;
+          grid-row: auto;
+        }
+
+        header h1 { font-size: 1.8rem; }
+
+        #searchBook { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header aplikasi -->
+    <header>
+      <h1>Bookshelf App</h1>
+      <p class="subtitle">Your Personal Reading Collection</p>
+    </header>
+
+    <main>
+      <!-- Form tambah buku -->
+      <section>
+        <h2><span class="icon">✦</span> Tambah Buku Baru</h2>
+        <form id="bookForm" data-testid="bookForm">
+          <div class="form-group">
+            <label for="bookFormTitle">Judul</label>
+            <input id="bookFormTitle" type="text" required data-testid="bookFormTitleInput" placeholder="Judul buku..." />
+          </div>
+          <div class="form-group">
+            <label for="bookFormAuthor">Penulis</label>
+            <input id="bookFormAuthor" type="text" required data-testid="bookFormAuthorInput" placeholder="Nama penulis..." />
+          </div>
+          <div class="form-group">
+            <label for="bookFormYear">Tahun</label>
+            <input id="bookFormYear" type="number" required data-testid="bookFormYearInput" placeholder="Tahun terbit..." />
+          </div>
+          <div class="checkbox-group">
+            <input id="bookFormIsComplete" type="checkbox" data-testid="bookFormIsCompleteCheckbox" />
+            <label for="bookFormIsComplete">Sudah selesai dibaca</label>
+          </div>
+          <button id="bookFormSubmit" type="submit" data-testid="bookFormSubmitButton">
+            Masukkan Buku ke rak <span>Belum selesai dibaca</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Form pencarian buku -->
+      <section>
+        <h2><span class="icon">⌕</span> Cari Buku</h2>
+        <form id="searchBook" data-testid="searchBookForm">
+          <div class="form-group">
+            <label for="searchBookTitle">Judul</label>
+            <input id="searchBookTitle" type="text" data-testid="searchBookFormTitleInput" placeholder="Cari judul buku..." />
+          </div>
+          <button id="searchSubmit" type="submit" data-testid="searchBookFormSubmitButton">Cari</button>
+        </form>
+      </section>
+
+      <!-- Rak buku -->
+      <div class="book-sections">
+        <!-- Rak: Belum selesai dibaca -->
+        <section>
+          <h2>
+            <span class="icon">🕐</span> Belum selesai dibaca
+            <span class="book-count" id="incompleteCount">0</span>
+          </h2>
+          <div id="incompleteBookList" data-testid="incompleteBookList" class="book-list">
+            <p class="empty-state">Tidak ada buku di rak ini.</p>
+          </div>
+        </section>
+
+        <!-- Rak: Selesai dibaca -->
+        <section>
+          <h2>
+            <span class="icon">✓</span> Selesai dibaca
+            <span class="book-count" id="completeCount">0</span>
+          </h2>
+          <div id="completeBookList" data-testid="completeBookList" class="book-list">
+            <p class="empty-state">Tidak ada buku di rak ini.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Edit Buku -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal">
+        <h2><span class="icon">✎</span> Edit Buku</h2>
+        <form id="editForm">
+          <input type="hidden" id="editBookId" />
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editBookTitle">Judul</label>
+            <input id="editBookTitle" type="text" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editBookAuthor">Penulis</label>
+            <input id="editBookAuthor" type="text" required />
+          </div>
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label for="editBookYear">Tahun</label>
+            <input id="editBookYear" type="number" required />
+          </div>
+          <div class="checkbox-group" style="margin-bottom: 4px;">
+            <input id="editBookIsComplete" type="checkbox" />
+            <label for="editBookIsComplete">Sudah selesai dibaca</label>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn-save">Simpan</button>
+            <button type="button" class="btn-cancel" id="cancelEdit">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
